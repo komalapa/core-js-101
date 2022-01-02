@@ -19,8 +19,8 @@
  *    'Tue, 26 Jan 2016 13:48:02 GMT' => Date()
  *    'Sun, 17 May 1998 03:00:00 GMT+01' => Date()
  */
-function parseDataFromRfc2822(/* value */) {
-  throw new Error('Not implemented');
+function parseDataFromRfc2822(value) {
+  return new Date(value);
 }
 
 /**
@@ -34,8 +34,8 @@ function parseDataFromRfc2822(/* value */) {
  *    '2016-01-19T16:07:37+00:00'    => Date()
  *    '2016-01-19T08:07:37Z' => Date()
  */
-function parseDataFromIso8601(/* value */) {
-  throw new Error('Not implemented');
+function parseDataFromIso8601(value) {
+  return new Date(value);
 }
 
 
@@ -53,8 +53,9 @@ function parseDataFromIso8601(/* value */) {
  *    Date(2012,1,1)    => true
  *    Date(2015,1,1)    => false
  */
-function isLeapYear(/* date */) {
-  throw new Error('Not implemented');
+function isLeapYear(date) {
+  const february29 = new Date(date.getFullYear(), 1, 29);
+  return february29.getMonth() === 1;
 }
 
 
@@ -73,10 +74,15 @@ function isLeapYear(/* date */) {
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,10,0,0,250)     => "00:00:00.250"
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
-function timeSpanToString(/* startDate, endDate */) {
-  throw new Error('Not implemented');
+// not Date but Date.UTC; toTimeString doesn't work because TimeZone is not 0
+function timeSpanToString(startDate, endDate) {
+  const span = endDate - startDate;
+  const mss = span % 1000;
+  const ss = ((span - mss) / 1000) % 60;
+  const m = ((span - 1000 * ss - mss) / 60000) % 60;
+  const h = (span - 60000 * m - 1000 * ss - mss) / 3600000;
+  return `${`00${h}`.slice(-2)}:${`00${m}`.slice(-2)}:${`00${ss}`.slice(-2)}.${`000${mss}`.slice(-3)}`;
 }
-
 
 /**
  * Returns the angle (in radians) between the hands of an analog clock
@@ -94,10 +100,18 @@ function timeSpanToString(/* startDate, endDate */) {
  *    Date.UTC(2016,3,5,18, 0) => Math.PI
  *    Date.UTC(2016,3,5,21, 0) => Math.PI/2
  */
-function angleBetweenClockHands(/* date */) {
-  throw new Error('Not implemented');
-}
+function angleBetweenClockHands(dateMSS) {
+  const date = new Date(dateMSS);
+  const minutes = date.getMinutes();
+  const hours = (date.getHours() % 12) + date.getTimezoneOffset() / 60;
+  const minutesAngle = minutes * 6;
+  const hoursAngle = hours * 30 + 0.5 * minutes;
 
+
+  let angle = Math.abs(minutesAngle - hoursAngle) % 360;
+  angle = angle > 180 ? 360 - angle : angle;
+  return angle * (Math.PI / 180);
+}
 
 module.exports = {
   parseDataFromRfc2822,
