@@ -6,7 +6,6 @@
  *                                                                                                *
  ************************************************************************************************ */
 
-
 /**
  * Returns the 'Fizz','Buzz' or an original number using the following rules:
  * 1) return original number
@@ -387,8 +386,14 @@ function isBracketsBalanced(str) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  let number = num;
+  let str = '';
+  while (number > 0) {
+    str = `${number % n}${str}`;
+    number = Math.floor(number / n);
+  }
+  return str;
 }
 
 
@@ -404,8 +409,23 @@ function toNaryString(/* num, n */) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  const pathsArrs = pathes.map((el) => el.split('/'));
+  const commonPath = [];
+  const compareDir = (index) => {
+    for (let i = 0; i < pathsArrs.length; i += 1) {
+      for (let j = 0; j < pathsArrs.length; j += 1) {
+        if (pathsArrs[i][index] !== pathsArrs[j][index]) return false;
+      }
+    }
+    return true;
+  };
+
+  for (let i = 0; i < pathsArrs[0].length; i += 1) {
+    if (!compareDir(i)) break;
+    commonPath.push(pathsArrs[0][i]);
+  }
+  return commonPath.length > 0 ? `${commonPath.join('/')}/` : '';
 }
 
 
@@ -427,11 +447,29 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const res = [];
+  for (let i = 0; i < m1.length; i += 1) {
+    res[i] = [];
+    for (let j = 0; j < m2[0].length; j += 1) {
+      res[i][j] = 0;
+      for (let k = 0; k < m1[0].length; k += 1) {
+        res[i][j] += m1[i][k] * m2[k][j];
+      }
+    }
+  }
+  return res;
 }
 
-
+// console.log(getMatrixProduct([
+//   [1, 0, 0],
+//   [0, 1, 0],
+//   [0, 0, 1],
+// ], [
+//   [1, 2, 3],
+//   [4, 5, 6],
+//   [7, 8, 9],
+// ]));
 /**
  * Returns the evaluation of the specified tic-tac-toe position.
  * See the details: https://en.wikipedia.org/wiki/Tic-tac-toe
@@ -462,8 +500,30 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  const testLine = (i) => {
+    if (position[i][0] === position[i][1]
+      && position[i][2] === position[i][1]) return position[i][0];
+    return false;
+  };
+  const testCol = (i) => {
+    if (position[0][i] === position[1][i]
+      && position[2][i] === position[1][i]) return position[0][i];
+    return false;
+  };
+  const testDiag = () => {
+    if ((position[0][0] === position[1][1]
+      && position[2][2] === position[1][1])
+      || (position[0][2] === position[1][1]
+      && position[2][0] === position[1][1])) return position[1][1];
+    return false;
+  };
+  for (let i = 0; i < 3; i += 1) {
+    if (testLine(i)) return testLine(i);
+    if (testCol(i)) return testCol(i);
+  }
+  if (testDiag()) return testDiag();
+  return undefined;
 }
 
 
